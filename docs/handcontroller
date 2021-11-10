@@ -1,0 +1,57 @@
+
+#include <MPU6050_tockn.h>
+#include <Wire.h>
+
+MPU6050 mpu6050(Wire);
+
+long int iax,iay,iaz,ax,ay,az,nax,nay,naz,sensorValue;
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(A0, INPUT);
+  mpu6050.begin();
+  mpu6050.calcGyroOffsets(true);
+  digitalWrite(LED_BUILTIN, HIGH);
+ 
+}
+
+void loop() {
+  mpu6050.update();
+  sensorValue = analogRead(A0);  
+iax =  mpu6050.getAngleX();
+iay =  mpu6050.getAngleY();
+iaz =  mpu6050.getAngleZ();
+
+  nax=iax-ax;
+  nay=iay-ay;
+  naz=iaz-az;
+
+  if(nax<0){nax = nax * -1 ;}
+  if(nay<0){nay = nay * -1 ;}
+  if(naz<0){naz = naz * -1 ;}
+
+  if (nax>nay){
+  if (nax>naz){ax=iax;}
+  if (nax<naz){az=iaz;}
+  }
+
+ else{
+    if(nay>naz){ay=iay;}
+    if(nay<naz){az=iaz;}
+  }
+  Serial.print(" "); 
+  Serial.print(sensorValue);
+  Serial.print(" ");
+  
+  Serial.print(ax);
+   Serial.print(" "); 
+  Serial.print(ay);
+
+   Serial.print(" ");
+ 
+  
+  Serial.println(az);
+  delay(50);
+}
